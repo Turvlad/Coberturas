@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quálitas - Selección de Coberturas</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* --- ESTILOS GENERALES --- */
+      :root {
+        --q-morado: #941b80;
+        --q-aqua: #0096ae;
+        --font-primary: "Montserrat", sans-serif;
+      }
+      body {
+        font-family: var(--font-primary);
+        background-color: #f8f9fa;
+      }
+
+      /* Utilidades de Color */
+      .text-aqua {
+        color: var(--q-aqua) !important;
+      }
+      .text-morado {
+        color: var(--q-morado) !important;
+      }
+      .bg-morado {
+        background-color: var(--q-morado) !important;
+      }
+      .bg-aqua {
+        background-color: var(--q-aqua) !important;
+      }
+
+      /* Botones Generales */
+      .btn-rounded {
+        border-radius: 50px;
+        padding: 10px 30px;
+        font-weight: 500;
+      }
+      .btn-morado {
+        background-color: var(--q-morado);
+        color: white;
+        border: none;
+      }
+      .btn-morado:hover {
+        background-color: #7a166a;
+        color: white;
+      }
+
+      /* --- NAVBAR --- */
+      .navbar {
+        background: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        z-index: 1030;
+      }
+      .navbar-brand img {
+        height: 60px;
+      }
+
+      /* --- HERO PRINCIPAL --- */
+      .hero-main {
+        height: 80vh;
+        background: url("https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?q=80&w=2070")
+          center/cover no-repeat;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        margin-top: 70px;
+      }
+      .hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(255, 255, 255, 0.65);
+      }
+      .hero-content {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        max-width: 800px;
+        padding: 20px;
+      }
+      .deco-line {
+        height: 9px;
+        width: 100%;
+        background: linear-gradient(
+          90deg,
+          var(--q-morado) 50%,
+          var(--q-aqua) 50%
+        );
+        margin: 20px 0;
+      }
+
+      /* --- MENU LATERAL (OFFCANVAS) --- */
+      .offcanvas {
+        z-index: 1045;
+      } /* Mayor que el navbar y sticky-tabs */
+      .offcanvas-header {
+        background: linear-gradient(90deg, var(--q-morado), #5e1151);
+        color: white;
+      }
+      .action-link {
+        cursor: pointer;
+        transition: background 0.2s;
+        font-size: 0.9rem;
+        border: none;
+        text-align: left;
+        width: 100%;
+        display: block;
+      }
+      .action-link:hover {
+        background-color: #f0f0f0;
+        color: var(--q-morado);
+      }
+
+      /* --- SECCIONES DE SELECCIÓN --- */
+      .seccion-eleccion {
+        padding: 80px 20px;
+        background: white;
+      }
+      .btn-wrapper {
+        background: none;
+        border: none;
+        padding: 0;
+        width: 100%;
+      }
+
+      .selection-card {
+        border-radius: 15px;
+        padding: 40px 20px;
+        text-align: center;
+        color: white;
+        height: 300px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.5rem;
+        font-weight: 500;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s;
+        line-height: 1.6;
+        cursor: pointer;
+      }
+      .selection-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+      }
+
+      .bg-gradient-morado {
+        background: linear-gradient(135deg, #941b80 0%, #5e1151 100%);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .bg-gradient-aqua {
+        background: linear-gradient(135deg, #0096ae 0%, #005f6e 100%);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      /* --- SECCIONES OCULTAS --- */
+      #paso-2-tipo-cobertura {
+        display: none;
+        background-color: #f0f2f5;
+      }
+      #paso-3-basicas,
+      #paso-3-adicionales {
+        display: none;
+      }
+
+      /* --- BARRA STICKY --- */
+      .sticky-tabs {
+        position: sticky;
+        top: 76px;
+        z-index: 1020;
+        background-color: var(--q-morado);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      .nav-pills .nav-link {
+        color: white;
+        border-radius: 0;
+        padding: 15px 15px;
+        font-weight: 500;
+        font-size: 0.9rem;
+        text-align: center;
+        white-space: normal;
+      }
+      .nav-pills .nav-link.active {
+        background: transparent;
+        color: white;
+        border-bottom: 5px solid var(--q-aqua);
+        position: relative;
+      }
+      .nav-pills .nav-link.active::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-top: 6px solid var(--q-aqua);
+      }
+
+      /* --- ESTILOS FLIP CARD --- */
+      .flip-card {
+        background-color: transparent;
+        height: 300px;
+        perspective: 1000px;
+        cursor: pointer;
+      }
+      .flip-card-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        transition: transform 0.8s;
+        transform-style: preserve-3d;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+      .flip-card:hover .flip-card-inner {
+        transform: rotateY(180deg);
+      }
+      .flip-card-front,
+      .flip-card-back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      .flip-card-front {
+        background-color: #333;
+        color: white;
+        display: flex;
+        align-items: flex-end;
+      }
+      .flip-card-front img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .card-gradient {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          to top,
+          rgba(0, 0, 0, 0.9) 0%,
+          rgba(0, 0, 0, 0) 70%
+        );
+        z-index: 1;
+      }
+
+      .front-content {
+        position: relative;
+        z-index: 2;
+        padding: 20px;
+        width: 100%;
+        text-align: left;
+      }
+      .front-content h5 {
+        font-weight: 700;
+        margin-bottom: 5px;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+      }
+      .hint-text {
+        font-size: 0.8rem;
+        color: var(--q-aqua);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .flip-card-back {
+        background-color: rgba(73, 10, 62, 0.95);
+        color: white;
+        transform: rotateY(180deg);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .flip-card-back p {
+        font-size: 0.95rem;
+        line-height: 1.5;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg fixed-top">
+      <div class="container-fluid px-4">
+        <a class="navbar-brand" href="#"
+          ><img
+            src="https://manualimagenqualitas.com.mx/img/qualitas-logo.png"
+            alt="Quálitas"
+        /></a>
+        <button
+          class="navbar-toggler border-0"
+          type="button"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#menuLateral"
+          aria-controls="menuLateral"
+        >
+          <span class="material-icons text-morado" style="font-size: 30px"
+            >menu</span
+          >
+        </button>
+      </div>
+    </nav>
+
+    <div
+      class="offcanvas offcanvas-end"
+      tabindex="-1"
+      id="menuLateral"
+      aria-labelledby="menuLateralLabel"
+    >
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="menuLateralLabel">
+          Menú de Coberturas
+        </h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="offcanvas"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="offcanvas-body p-0">
+        <div class="accordion accordion-flush" id="accordionMenu">
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button
+                class="accordion-button collapsed fw-bold"
+                type="button"
+                onclick="window.scrollTo({top:0, behavior:'smooth'});"
+                data-bs-dismiss="offcanvas"
+              >
+                <span class="material-icons me-2 text-muted">home</span> Inicio
+              </button>
+            </h2>
+          </div>
+
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingAutos">
+              <button
+                class="accordion-button collapsed fw-bold text-morado"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseAutos"
+                aria-expanded="false"
+                aria-controls="collapseAutos"
+              >
+                <span class="material-icons me-2">directions_car</span> Autos y
+                Pickups
+              </button>
+            </h2>
+            <div
+              id="collapseAutos"
+              class="accordion-collapse collapse"
+              aria-labelledby="headingAutos"
+              data-bs-parent="#accordionMenu"
+            >
+              <div class="accordion-body p-0">
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item bg-light fw-bold ps-4">Básicas</li>
+                  <li
+                    class="list-group-item ps-5 action-link"
+                    onclick="navegarDesdeMenu('ligero', 'basicas', 'tab-danos')"
+                  >
+                    Daños Materiales
+                  </li>
+                  <li
+                    class="list-group-item ps-5 action-link"
+                    onclick="navegarDesdeMenu('ligero', 'basicas', 'tab-robo')"
+                  >
+                    Robo Total
+                  </li>
+                  <li
+                    class="list-group-item ps-5 action-link"
+                    onclick="navegarDesdeMenu('ligero', 'basicas', 'tab-rc')"
+                  >
+                    RC Terceros
+                  </li>
+
+                  <li class="list-group-item bg-light fw-bold ps-4 mt-2">
+                    Adicionales
+                  </li>
+                  <li
+                    class="list-group-item ps-5 action-link"
+                    onclick="navegarDesdeMenu('ligero', 'adicionales', 'tab-equipo')"
+                  >
+                    Equipo Especial
+                  </li>
+                  <li
+                    class="list-group-item ps-5 action-link"
+                    onclick="navegarDesdeMenu('ligero', 'adicionales', 'tab-neumaticos')"
+                  >
+                    Neumáticos
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingPesados">
+              <button
+                class="accordion-button collapsed fw-bold text-aqua"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapsePesados"
+                aria-expanded="false"
+                aria-controls="collapsePesados"
+              >
+                <span class="material-icons me-2">local_shipping</span> Equipo
+                Pesado
+              </button>
+            </h2>
+            <div
+              id="collapsePesados"
+              class="accordion-collapse collapse"
+              aria-labelledby="headingPesados"
+              data-bs-parent="#accordionMenu"
+            >
+              <div class="accordion-body p-0">
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item bg-light fw-bold ps-4">Básicas</li>
+                  <li
+                    class="list-group-item ps-5 action-link"
+                    onclick="navegarDesdeMenu('pesado', 'basicas', 'tab-danos')"
+                  >
+                    Daños Materiales
+                  </li>
+                  <li
+                    class="list-group-item ps-5 action-link"
+                    onclick="navegarDesdeMenu('pesado', 'basicas', 'tab-robo')"
+                  >
+                    Robo Total
+                  </li>
+                  <li class="list-group-item bg-light fw-bold ps-4 mt-2">
+                    Adicionales
+                  </li>
+                  <li
+                    class="list-group-item ps-5 action-link"
+                    onclick="navegarDesdeMenu('pesado', 'adicionales', 'tab-equipo')"
+                  >
+                    Equipo Especial
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <header class="hero-main">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <div class="deco-line"></div>
+        <h1 class="display-2 fw-normal" style="color: #333">Coberturas</h1>
+        <div class="deco-line" style="width: 50%; margin: 20px auto"></div>
+        <br />
+        <a href="#seleccion" class="btn btn-morado btn-rounded shadow-lg"
+          >Comenzar</a
+        >
+      </div>
+    </header>
+
+    <section id="seleccion" class="seccion-eleccion container text-center">
+      <h2 class="mb-5 fw-bold" style="color: #333">
+        Elige tu tipo de vehículo
+      </h2>
+      <div class="row g-5 justify-content-center">
+        <div class="col-md-5">
+          <button onclick="seleccionarVehiculo('ligero')" class="btn-wrapper">
+            <div class="selection-card bg-gradient-morado">
+              <span
+                class="material-icons mb-3"
+                style="font-size: 4.5rem; opacity: 0.9"
+                >directions_car</span
+              >
+              <h3 class="fw-bold mb-3">AUTOMÓVILES,<br />PICKUPS Y MOTOS</h3>
+              <p class="small text-white-50 m-0">
+                Uso particular y comercial ligero
+              </p>
+            </div>
+          </button>
+        </div>
+        <div class="col-md-5">
+          <button onclick="seleccionarVehiculo('pesado')" class="btn-wrapper">
+            <div class="selection-card bg-gradient-aqua">
+              <span
+                class="material-icons mb-3"
+                style="font-size: 4.5rem; opacity: 0.9"
+                >local_shipping</span
+              >
+              <h3 class="fw-bold mb-3">EQUIPO PESADO<br />Y AUTOBUSES</h3>
+              <p class="small text-white-50 m-0">Servicio público y carga</p>
+            </div>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="paso-2-tipo-cobertura" class="seccion-eleccion text-center">
+      <div class="container">
+        <h2
+          id="titulo-vehiculo-seleccionado"
+          class="mb-2 fw-bold text-morado"
+        ></h2>
+        <p class="mb-5 text-muted">
+          Selecciona el tipo de cobertura que deseas consultar
+        </p>
+        <div class="row g-5 justify-content-center">
+          <div class="col-md-5">
+            <button
+              onclick="mostrarDetalleFinal('basicas')"
+              class="btn-wrapper"
+            >
+              <div
+                class="selection-card"
+                style="
+                  background: linear-gradient(135deg, #941b80 0%, #5e1151 100%);
+                "
+              >
+                <span class="material-icons mb-3" style="font-size: 4rem"
+                  >verified_user</span
+                >
+                <h3>COBERTURAS<br />BÁSICAS</h3>
+                <p class="mt-3 small">Lo esencial para tu protección</p>
+              </div>
+            </button>
+          </div>
+          <div class="col-md-5">
+            <button
+              onclick="mostrarDetalleFinal('adicionales')"
+              class="btn-wrapper"
+            >
+              <div
+                class="selection-card"
+                style="
+                  background: linear-gradient(135deg, #0096ae 0%, #005f6e 100%);
+                "
+              >
+                <span class="material-icons mb-3" style="font-size: 4rem"
+                  >add_moderator</span
+                >
+                <h3>COBERTURAS<br />ADICIONALES</h3>
+                <p class="mt-3 small">Complementa tu seguridad</p>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div id="paso-3-basicas">
+      <div class="container-fluid py-4 text-center bg-light border-top">
+        <h2 class="text-morado fw-bold m-0">Coberturas Básicas</h2>
+        <small class="text-muted">Desglose de protecciones estándar</small>
+      </div>
+
+      <div class="sticky-tabs">
+        <div
+          class="nav nav-pills flex-nowrap overflow-auto justify-content-lg-center"
+          id="pills-tab-basic"
+          role="tablist"
+        >
+          <button
+            class="nav-link active"
+            data-bs-toggle="pill"
+            data-bs-target="#tab-danos"
+          >
+            Daños Materiales
+          </button>
+          <button
+            class="nav-link"
+            data-bs-toggle="pill"
+            data-bs-target="#tab-robo"
+          >
+            Robo Total
+          </button>
+          <button
+            class="nav-link"
+            data-bs-toggle="pill"
+            data-bs-target="#tab-rc"
+          >
+            RC Terceros
+          </button>
+          <button
+            class="nav-link"
+            data-bs-toggle="pill"
+            data-bs-target="#tab-medicos"
+          >
+            Gastos Médicos
+          </button>
+          <button
+            class="nav-link"
+            data-bs-toggle="pill"
+            data-bs-target="#tab-legal"
+          >
+            Gastos Legales
+          </button>
+          <button
+            class="nav-link"
+            data-bs-toggle="pill"
+            data-bs-target="#tab-vial"
+          >
+            Asistencia Vial
+          </button>
+        </div>
+      </div>
+
+      <div class="container py-5 tab-content">
+        <div class="tab-pane fade show active" id="tab-danos">
+          <div class="d-flex justify-content-center mb-5">
+            <div
+              class="btn-group bg-white shadow-sm rounded-pill p-1"
+              role="group"
+            >
+              <button
+                type="button"
+                class="btn btn-rounded btn-morado"
+                id="btn-ver-tarjetas"
+                onclick="switchModo('tarjetas')"
+              >
+                <span class="material-icons align-middle fs-6 me-1"
+                  >grid_view</span
+                >
+                Resumen
+              </button>
+              <button
+                type="button"
+                class="btn btn-rounded text-muted"
+                id="btn-ver-video"
+                onclick="switchModo('video')"
+              >
+                <span class="material-icons align-middle fs-6 me-1"
+                  >play_circle</span
+                >
+                Video y Detalle
+              </button>
+            </div>
+          </div>
+
+          <div id="vista-tarjetas" class="fade show">
+            <h3 class="text-aqua mb-4 text-center fw-bold">
+              Puntos clave de tu protección:
+            </h3>
+            <div class="row g-4">
+              <div class="col-6 col-md-3">
+                <div class="flip-card">
+                  <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                      <img
+                        src="https://images.unsplash.com/photo-1568283084334-a6983808404a?q=80&w=600"
+                        alt="Vuelcos"
+                      />
+                      <div class="card-gradient"></div>
+                      <div class="front-content">
+                        <h5>Vuelcos o<br />colisiones</h5>
+                        <span class="hint-text"
+                          >¿Qué ampara?
+                          <i class="material-icons" style="font-size: 12px"
+                            >touch_app</i
+                          ></span
+                        >
+                      </div>
+                    </div>
+                    <div class="flip-card-back">
+                      <h5>Vuelcos o Colisiones</h5>
+                      <hr style="width: 50%; border-color: white" />
+                      <p>
+                        Cubre los daños materiales que sufra tu vehículo a
+                        consecuencia de vuelcos o colisiones accidentales.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="flip-card">
+                  <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                      <img
+                        src="https://images.unsplash.com/photo-1563720223185-11003d516935?q=80&w=600"
+                        alt="Cristales"
+                      />
+                      <div class="card-gradient"></div>
+                      <div class="front-content">
+                        <h5>Rotura de<br />Cristales</h5>
+                        <span class="hint-text"
+                          >¿Qué ampara?
+                          <i class="material-icons" style="font-size: 12px"
+                            >touch_app</i
+                          ></span
+                        >
+                      </div>
+                    </div>
+                    <div class="flip-card-back">
+                      <h5>Rotura de Cristales</h5>
+                      <hr style="width: 50%; border-color: white" />
+                      <p>
+                        Ampara la rotura, desprendimiento o robo de cristales:
+                        parabrisas, laterales, aletas y medallón.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="vista-video" class="d-none fade">
+            <div class="row align-items-center">
+              <div class="col-lg-6 mb-4 mb-lg-0">
+                <div
+                  class="ratio ratio-16x9 shadow-lg rounded-4 overflow-hidden"
+                >
+                  <iframe
+                    src="https://www.youtube.com/embed/D0UnqGm_miA?si=EXAMPLE"
+                    title="Explicación Cobertura"
+                    allowfullscreen
+                  ></iframe>
+                </div>
+              </div>
+              <div class="col-lg-6 text-start px-lg-5">
+                <h3 class="text-morado fw-bold mb-3">
+                  Detalle de Daños Materiales
+                </h3>
+                <p class="text-muted">
+                  Esta cobertura ampara los daños o pérdidas materiales que
+                  sufra el vehículo asegurado a consecuencia de riesgos como:
+                </p>
+                <ul class="list-unstyled text-muted">
+                  <li class="mb-2">
+                    <span class="text-aqua material-icons align-middle me-2"
+                      >check_circle</span
+                    >
+                    Colisiones y vuelcos.
+                  </li>
+                  <li class="mb-2">
+                    <span class="text-aqua material-icons align-middle me-2"
+                      >check_circle</span
+                    >
+                    Rotura de cristales, aletas y medallón.
+                  </li>
+                  <li class="mb-2">
+                    <span class="text-aqua material-icons align-middle me-2"
+                      >check_circle</span
+                    >
+                    Incendio, rayo y explosión.
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-pane fade text-center" id="tab-robo">
+          <h3>Contenido de Robo Total...</h3>
+        </div>
+      </div>
+    </div>
+
+    <div id="paso-3-adicionales">
+      <div class="container-fluid py-4 text-center bg-light border-top">
+        <h2 class="text-aqua fw-bold m-0">Coberturas Adicionales</h2>
+        <small class="text-muted"
+          >Extras opcionales para mayor tranquilidad</small
+        >
+      </div>
+
+      <div class="sticky-tabs" style="background-color: var(--q-aqua)">
+        <div
+          class="nav nav-pills flex-nowrap overflow-auto justify-content-lg-center"
+          id="pills-tab-add"
+          role="tablist"
+        >
+          <button
+            class="nav-link active"
+            data-bs-toggle="pill"
+            data-bs-target="#tab-equipo"
+          >
+            Equipo Especial
+          </button>
+          <button
+            class="nav-link"
+            data-bs-toggle="pill"
+            data-bs-target="#tab-neumaticos"
+          >
+            Neumáticos
+          </button>
+          <button
+            class="nav-link"
+            data-bs-toggle="pill"
+            data-bs-target="#tab-muerte"
+          >
+            Muerte Accidental
+          </button>
+          <button
+            class="nav-link"
+            data-bs-toggle="pill"
+            data-bs-target="#tab-auto"
+          >
+            Auto Sustituto
+          </button>
+        </div>
+      </div>
+
+      <div class="container py-5 tab-content">
+        <div class="tab-pane fade show active text-center" id="tab-equipo">
+          <h3 class="text-morado mb-5">Equipo Especial</h3>
+          <p>Aquí puedes agregar las tarjetas con flip también...</p>
+        </div>
+        <div class="tab-pane fade text-center" id="tab-neumaticos">
+          <h3>Protección para tus llantas y rines...</h3>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      // 1. NAVEGACIÓN DESDE EL MENÚ
+      function navegarDesdeMenu(vehiculo, tipoCobertura, idTab) {
+        // Cerrar menú sandwich
+        const menuLateral = document.getElementById("menuLateral");
+        const bsOffcanvas = bootstrap.Offcanvas.getInstance(menuLateral);
+        if (bsOffcanvas) bsOffcanvas.hide();
+
+        // Ejecutar selección de vehículo
+        seleccionarVehiculo(vehiculo);
+
+        // Esperar transición y abrir detalle y tab específico
+        setTimeout(() => {
+          mostrarDetalleFinal(tipoCobertura);
+
+          const tabButton = document.querySelector(
+            `button[data-bs-target="#${idTab}"]`
+          );
+          if (tabButton) {
+            const tabInstance = new bootstrap.Tab(tabButton);
+            tabInstance.show();
+          }
+        }, 400); // 400ms para asegurar suavidad
+      }
+
+      // 2. SELECCIÓN DE VEHÍCULO (Paso 1 -> Paso 2)
+      function seleccionarVehiculo(tipo) {
+        const paso2 = document.getElementById("paso-2-tipo-cobertura");
+        const titulo = document.getElementById("titulo-vehiculo-seleccionado");
+
+        paso2.style.display = "block";
+
+        if (tipo === "ligero") {
+          titulo.textContent = "Automóviles, Pickups y Motocicletas";
+          titulo.style.color = "var(--q-morado)";
+        } else {
+          titulo.textContent = "Equipo Pesado y Autobuses";
+          titulo.style.color = "var(--q-aqua)";
+        }
+
+        // Resetear vistas siguientes para evitar conflictos
+        document.getElementById("paso-3-basicas").style.display = "none";
+        document.getElementById("paso-3-adicionales").style.display = "none";
+
+        // Scroll suave
+        setTimeout(() => {
+          paso2.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 100);
+      }
+
+      // 3. MOSTRAR DETALLE FINAL (Paso 2 -> Paso 3)
+      function mostrarDetalleFinal(tipoCobertura) {
+        const bloqueBasico = document.getElementById("paso-3-basicas");
+        const bloqueAdicional = document.getElementById("paso-3-adicionales");
+        let bloqueDestino;
+
+        if (tipoCobertura === "basicas") {
+          bloqueBasico.style.display = "block";
+          bloqueAdicional.style.display = "none";
+          bloqueDestino = bloqueBasico;
+        } else {
+          bloqueBasico.style.display = "none";
+          bloqueAdicional.style.display = "block";
+          bloqueDestino = bloqueAdicional;
+        }
+
+        // Scroll compensando el navbar fijo (80px)
+        setTimeout(() => {
+          const navHeight = 80;
+          const elementPosition = bloqueDestino.getBoundingClientRect().top;
+          const offsetPosition =
+            elementPosition + window.pageYOffset - navHeight;
+          window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+        }, 100);
+      }
+
+      // 4. SWITCH TOGGLE (Resumen vs Video)
+      function switchModo(modo) {
+        const vistaTarjetas = document.getElementById("vista-tarjetas");
+        const vistaVideo = document.getElementById("vista-video");
+        const btnTarjetas = document.getElementById("btn-ver-tarjetas");
+        const btnVideo = document.getElementById("btn-ver-video");
+
+        if (modo === "tarjetas") {
+          vistaVideo.classList.add("d-none");
+          vistaVideo.classList.remove("show");
+          vistaTarjetas.classList.remove("d-none");
+          setTimeout(() => vistaTarjetas.classList.add("show"), 50);
+
+          btnTarjetas.classList.add("btn-morado");
+          btnTarjetas.classList.remove("text-muted");
+          btnVideo.classList.remove("btn-morado");
+          btnVideo.classList.add("text-muted");
+        } else {
+          vistaTarjetas.classList.add("d-none");
+          vistaTarjetas.classList.remove("show");
+          vistaVideo.classList.remove("d-none");
+          setTimeout(() => vistaVideo.classList.add("show"), 50);
+
+          btnVideo.classList.add("btn-morado");
+          btnVideo.classList.remove("text-muted");
+          btnTarjetas.classList.remove("btn-morado");
+          btnTarjetas.classList.add("text-muted");
+        }
+      }
+    </script>
+  </body>
+</html>
